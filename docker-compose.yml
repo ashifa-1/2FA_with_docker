@@ -1,4 +1,4 @@
-version: "3.9"
+version: "3.3"
 
 services:
   app:
@@ -8,8 +8,11 @@ services:
     environment:
       - TZ=UTC
     volumes:
+      # Named volumes for seed and cron logs
       - seed-data:/data
       - cron-output:/cron
+
+      # Key files mounted read-only into container
       - ./keys/student_private.pem:/app/keys/student_private.pem:ro
       - ./keys/student_public.pem:/app/keys/student_public.pem:ro
       - ./keys/instructor_public.pem:/app/keys/instructor_public.pem:ro
