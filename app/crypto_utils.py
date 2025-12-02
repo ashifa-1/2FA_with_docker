@@ -5,6 +5,8 @@ from typing import Tuple
 import base64
 import os
 import requests
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import padding
 
 def generate_rsa_keypair(key_size: int = 4096) -> Tuple[bytes, bytes]:
     private_key = rsa.generate_private_key(
@@ -110,3 +112,41 @@ def decrypt_seed(encrypted_seed_b64: str) -> str:
         raise ValueError("Seed must be lowercase hex")
 
     return hex_seed
+
+
+def sign_message(message: str, private_key) -> bytes:
+    """
+    Sign a message using RSA-PSS with SHA-256.
+
+    message: ASCII hex string (commit hash)
+    private_key: RSA private key object
+    """
+    message_bytes = message.encode("ascii")  
+
+    signature = private_key.sign(
+        message_bytes,
+        padding.PSS(
+            mgf=padding.MGF1(hashes.SHA256()),
+            salt_length=padding.PSS.MAX_LENGTH,
+        ),
+        hashes.SHA256(),
+    )
+    return signature
+
+
+def encrypt_with_public_key(data: bytes, public_key) -> bytes:
+    """
+    Encrypt bytes using RSA/OAEP with SHA-256.
+
+    data: signature bytes
+    public_key: instructor RSA public key object
+    """
+    ciphertext = public_key.encrypt(
+        data,
+        padding.OAEP(
+            mgf=padding.MGF1(algorithm=hashes.SHA256()),
+            algorithm=hashes.SHA256(),
+            label=None,
+        ),
+    )
+    return ciphertext
