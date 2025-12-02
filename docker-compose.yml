@@ -1,0 +1,19 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - TZ=UTC
+    volumes:
+      - seed-data:/data
+      - cron-output:/cron
+      - ./keys/student_private.pem:/app/keys/student_private.pem:ro
+      - ./keys/student_public.pem:/app/keys/student_public.pem:ro
+      - ./keys/instructor_public.pem:/app/keys/instructor_public.pem:ro
+
+volumes:
+  seed-data:
+  cron-output:
