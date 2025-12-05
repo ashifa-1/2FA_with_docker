@@ -46,10 +46,7 @@ def main():
     encrypted_signature = encrypt_with_public_key(signature, instructor_public_key)
 
     encoded = base64.b64encode(encrypted_signature).decode("ascii")
-
-    print("\n----- COPY THIS ENCRYPTED SIGNATURE INTO THE SUBMISSION FORM -----\n")
     print(encoded)
-    print("\n------------------------------------------------------------------\n")
 
     with open("commit_proof.txt", "w") as f:
         f.write(encoded + "\n")
